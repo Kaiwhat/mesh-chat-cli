@@ -30,3 +30,9 @@ mesh-chat-cli/
 | `messenger.py`     | 使用 UDP 廣播 / 私聊，附帶暱稱訊息          |
 | `config.py`        | 暱稱設定模組，儲存至 `node_config.json`  |
 | `node_config.json` | 暱稱設定檔，下次開啟自動使用                 |
+
+## 使用方式 Usage
+```bash=
+./start_chat.sh --name 小明
+```
+下次就會記得你的暱稱，不再要求輸入

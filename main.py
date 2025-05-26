@@ -10,7 +10,7 @@ if __name__ == '__main__':
         name = input("請輸入您的節點暱稱：")
         config.save_nickname(name)
     else:
-        print(f"✅ 目前使用暱稱：{config.load_nickname()}")
+        print(f"目前使用暱稱：{config.load_nickname()}")
 
     listener_thread = threading.Thread(target=messenger.start_listener, daemon=True)
     listener_thread.start()
