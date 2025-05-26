@@ -1,5 +1,6 @@
 import socket
 import threading
+from utils import config
 
 PORT = 5000
 BUFFER = 1024
@@ -16,10 +17,14 @@ def start_listener():
             print(f"[錯誤] 接收失敗: {e}")
 
 def send_broadcast(message):
+    nickname = config.load_nickname()
+    formatted = f"[{nickname}] {message}"
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-    sock.sendto(message.encode(), ("<broadcast>", PORT))
+    sock.sendto(formatted.encode(), ("<broadcast>", PORT))
 
 def send_private(ip, message):
+    nickname = config.load_nickname()
+    formatted = f"[{nickname}] {message}"
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    sock.sendto(message.encode(), (ip, PORT))
+    sock.sendto(formatted.encode(), (ip, PORT))
