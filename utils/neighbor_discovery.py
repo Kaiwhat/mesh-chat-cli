@@ -2,27 +2,19 @@ import subprocess, json, re, os
 
 CONFIG_FILE = os.path.join(os.path.dirname(__file__), "../config/nodes.json")
 
-def _get_bat_neighbors():
+def _get_ip_mac_from_tg():
+    result = {}
     try:
-        out = subprocess.check_output(["batctl", "n"], text=True)
-        print("[除錯] batctl n 輸出:\n", out)
-        return re.findall(r"([0-9a-f:]{17})", out)
-    except Exception as e:
-        print(f"[錯誤] 無法執行 batctl n: {e}")
-        return []
-
-def _get_ip_for_mac():
-    ip_map = {}
-    try:
-        out = subprocess.check_output(["ip", "neigh"], text=True)
-        print("[除錯] ip neigh 輸出:\n", out)
+        out = subprocess.check_output(["batctl", "tg"], text=True)
+        print("[除錯] batctl tg 輸出:\n", out)
         for line in out.splitlines():
-            parts = line.split()
-            if len(parts) >= 5:
-                ip_map[parts[4]] = parts[0]  # MAC -> IP
+            match = re.search(r"(\d+\.\d+\.\d+\.\d+).*?(\w\w:\w\w:\w\w:\w\w:\w\w:\w\w)", line)
+            if match:
+                ip, mac = match.groups()
+                result[mac.lower()] = ip
     except Exception as e:
-        print(f"[錯誤] 無法執行 ip neigh: {e}")
-    return ip_map
+        print(f"[錯誤] 執行 batctl tg 失敗: {e}")
+    return result
 
 def _load_names():
     try:
@@ -36,21 +28,18 @@ def _save_names(names):
         json.dump(names, f)
 
 def get_named_neighbors():
-    macs = _get_bat_neighbors()
-    ip_map = _get_ip_for_mac()
+    tg_map = _get_ip_mac_from_tg()
     names = _load_names()
     result = {}
-    for mac in macs:
-        if mac in ip_map:
-            ip = ip_map[mac]
-            name = names.get(mac, "未知節點")
-            result[ip] = name
+    for mac, ip in tg_map.items():
+        name = names.get(mac, "未知節點")
+        result[ip] = name
     print("[除錯] 鄰居節點：", result)
     return result
 
 def update_node_name(ip, name):
-    ip_map = _get_ip_for_mac()
-    for mac, ip_addr in ip_map.items():
+    tg_map = _get_ip_mac_from_tg()
+    for mac, ip_addr in tg_map.items():
         if ip_addr == ip:
             names = _load_names()
             names[mac] = name
