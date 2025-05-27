@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# 網路參數
+# 編輯此處調整網路參數
 IFACE=wlan0
-SSID="MeshNet"
+SSID="lsa-mesh"
 FREQ=2412             # channel 1 = 2412 MHz
 IP_ADDR="10.0.0.$(shuf -i 10-250 -n 1)"  # 隨機選擇一個節點位址
 NETMASK=24
@@ -15,13 +15,16 @@ sudo iw dev $IFACE set type ibss
 sudo ip link set $IFACE up
 
 echo "加入 IBSS 網路 SSID=$SSID 頻道=2412"
+# 加入 IBSS 網路
 sudo iw dev $IFACE ibss join $SSID $FREQ
 
 echo "設定靜態 IP 為 $IP_ADDR/$NETMASK"
+# 設定靜態 IP
 sudo ip addr flush dev $IFACE
 sudo ip addr add $IP_ADDR/$NETMASK dev $IFACE
 
 echo "正在開啟 batman-adv"
+# 開啟 batman-adv
 sudo modprobe batman-adv
 sudo ip link set $IFACE down
 sudo iw dev $IFACE set type ibss  # 檢查是否仍為 ibss
