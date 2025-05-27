@@ -1,10 +1,10 @@
 import curses
 from network import messenger
-from utils import neighbor_discovery
+from utils import neighbor_discovery, history
 
 def main_menu(stdscr):
     curses.curs_set(0)
-    options = ["群組聊天室", "私人對話", "離開"]
+    options = ["群組聊天室", "私人對話", "查看聊天記錄", "離開"]
     current_row = 0
 
     while True:
@@ -25,6 +25,8 @@ def main_menu(stdscr):
             elif current_row == 1:
                 private_chat(stdscr)
             elif current_row == 2:
+                show_history(stdscr)
+            elif current_row == 3:
                 break
         stdscr.refresh()
 
@@ -38,6 +40,7 @@ def group_chat(stdscr):
         if msg == "/back":
             break
         messenger.send_broadcast(msg)
+        history.save_chat("broadcast", msg)
 
 def private_chat(stdscr):
     curses.echo()
@@ -59,20 +62,36 @@ def private_chat(stdscr):
     ip = list(neighbors.keys())[idx]
     name = list(neighbors.values())[idx]
 
-    # 允許重新命名
     stdscr.addstr(len(neighbors)+4, 0, f"是否為此節點命名？目前名稱: {name} (y/n): ")
     choice = stdscr.getstr().decode().lower()
     if choice == 'y':
         stdscr.addstr(len(neighbors)+5, 0, "輸入新名稱：")
         new_name = stdscr.getstr().decode()
         neighbor_discovery.update_node_name(ip, new_name)
+        name = new_name
 
-    # 進入對話
     stdscr.clear()
-    stdscr.addstr(0, 0, f"[與 {name} 的私聊] 輸入訊息，/back 返回\n")
+    stdscr.addstr(0, 0, f"[與 {name} 的對話] 輸入訊息，/back 返回\n")
     while True:
         stdscr.addstr(2, 0, "> ")
         msg = stdscr.getstr().decode()
         if msg == "/back":
             break
         messenger.send_private(ip, msg)
+        history.save_chat(name, msg)
+
+def show_history(stdscr):
+    curses.echo()
+    stdscr.clear()
+    stdscr.addstr(0, 0, "[聊天記錄] 輸入對象名稱或 broadcast 查看群聊，/back 返回\n")
+    stdscr.addstr(2, 0, "對象名稱: ")
+    target = stdscr.getstr().decode()
+    if target == "/back":
+        return
+    lines = history.load_chat(target)
+    stdscr.clear()
+    stdscr.addstr(0, 0, f"與 {target} 的聊天記錄：\n")
+    for i, line in enumerate(lines[-10:]):
+        stdscr.addstr(i+2, 0, line)
+    stdscr.addstr(13, 0, "按任意鍵返回...")
+    stdscr.getch()
