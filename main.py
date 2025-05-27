@@ -11,8 +11,8 @@ def check_permissions():
     try:
         subprocess.check_output(["batctl", "n"], stderr=subprocess.DEVNULL)
     except subprocess.CalledProcessError:
-        print("⚠️ 無法執行 'batctl n'，請確認是否擁有 root 權限或已加入 batman 群組")
-        print("💡 解法：請使用以下指令加入群組並重新啟動：")
+        print("  無法執行 'batctl n'，請確認是否擁有 root 權限或已加入 batman 群組")
+        print("  解法：請使用以下指令加入群組並重新啟動：")
         print("  sudo groupadd batman")
         print("  sudo chgrp batman /usr/sbin/batctl && sudo chmod g+xs /usr/sbin/batctl")
         print("  sudo usermod -aG batman $USER")
