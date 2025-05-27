@@ -5,20 +5,23 @@ CONFIG_FILE = os.path.join(os.path.dirname(__file__), "../config/nodes.json")
 def _get_bat_neighbors():
     try:
         out = subprocess.check_output(["batctl", "n"], text=True)
+        print("[除錯] batctl n 輸出:\n", out)
         return re.findall(r"([0-9a-f:]{17})", out)
-    except:
+    except Exception as e:
+        print(f"[錯誤] 無法執行 batctl n: {e}")
         return []
 
 def _get_ip_for_mac():
     ip_map = {}
     try:
         out = subprocess.check_output(["ip", "neigh"], text=True)
+        print("[除錯] ip neigh 輸出:\n", out)
         for line in out.splitlines():
             parts = line.split()
             if len(parts) >= 5:
                 ip_map[parts[4]] = parts[0]  # MAC -> IP
-    except:
-        pass
+    except Exception as e:
+        print(f"[錯誤] 無法執行 ip neigh: {e}")
     return ip_map
 
 def _load_names():
@@ -42,6 +45,7 @@ def get_named_neighbors():
             ip = ip_map[mac]
             name = names.get(mac, "未知節點")
             result[ip] = name
+    print("[除錯] 鄰居節點：", result)
     return result
 
 def update_node_name(ip, name):
