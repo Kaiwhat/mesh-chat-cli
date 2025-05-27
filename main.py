@@ -5,11 +5,13 @@ from network import messenger
 from utils import config, neighbor_discovery
 import threading
 import os
+import sys
 import subprocess
 
 def check_permissions():
     try:
         subprocess.check_output(["batctl", "n"], stderr=subprocess.DEVNULL)
+        return True
     except subprocess.CalledProcessError:
         print("  無法執行 'batctl n'，請確認是否擁有 root 權限或已加入 batman 群組")
         print("  解法：請使用以下指令加入群組並重新啟動：")
@@ -17,9 +19,10 @@ def check_permissions():
         print("  sudo chgrp batman /usr/sbin/batctl && sudo chmod g+xs /usr/sbin/batctl")
         print("  sudo usermod -aG batman $USER")
         print("  reboot")
+        return False
 
 if __name__ == '__main__':
-    check_permissions()
+    if(not check_permissions()): sys.exit(1)
 
     if not os.path.exists("config/node_config.json"):
         name = input("請輸入您的節點暱稱：")
