@@ -13,7 +13,7 @@ fi
 
 echo "🔧 執行 setup_ibss.sh..."
 sudo apt install batctl
-pip3 install --break-system-packages wcwidth
+sudo pip3 install --break-system-packages wcwidth
 pip install 
 sudo bash "$SCRIPT_DIR/setup_ibss.sh"
 

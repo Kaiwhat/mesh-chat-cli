@@ -1,7 +1,6 @@
 import curses
 from network import messenger
-from utils import neighbor_discovery, history
-import config
+from utils import neighbor_discovery, history, config
 from wcwidth import wcswidth
 
 def main_menu(stdscr):
