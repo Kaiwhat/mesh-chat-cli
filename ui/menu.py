@@ -1,11 +1,11 @@
-import curses
+import curses, subprocess
 from network import messenger
 from utils import neighbor_discovery, history, config
 from wcwidth import wcswidth
 
 def main_menu(stdscr):
     curses.curs_set(0)
-    options = ["群組聊天室", "私人對話", "查看聊天記錄", "離開"]
+    options = ["群組聊天室", "私人對話", "查看聊天記錄", "掃描", "離開"]
     current_row = 0
 
     while True:
@@ -28,8 +28,19 @@ def main_menu(stdscr):
             elif current_row == 2:
                 show_history(stdscr)
             elif current_row == 3:
+                ping_sweep(stdscr)
+            elif current_row == 4:
                 break
         stdscr.refresh()
+
+def ping_sweep(stdscr):
+    curses.echo()
+    stdscr.clear()
+    stdscr.addstr(0, 0, "Ping travelsal...")
+    try:
+        subprocess.check_output(["./ping_sweep.sh"], text=True)
+    except Exception as e:
+        print(f"[錯誤] 執行 ping_sweep 失敗: {e}")
 
 def group_chat(stdscr):
     curses.echo()
