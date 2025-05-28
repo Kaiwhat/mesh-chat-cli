@@ -11,7 +11,7 @@ if [[ "$1" == "--name" && -n "$2" ]]; then
   echo "{ \"nickname\": \"$2\" }" > "$SCRIPT_DIR/config/node_config.json"
 fi
 
-echo "🔧 執行 setup_ibss.sh..."
+echo " 執行 setup_ibss.sh..."
 sudo apt install batctl
 sudo pip3 install --break-system-packages wcwidth
 sudo bash "$SCRIPT_DIR/setup_ibss.sh"

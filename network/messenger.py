@@ -32,12 +32,12 @@ sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 sock.bind(("", PORT))
 
 def start_listener():
-    print(f"\n[系統] 已啟動接收器，監聽 UDP 埠 {PORT}\n")
+    # print(f"\n[系統] 已啟動接收器，監聽 UDP 埠 {PORT}\n")
     while True:
         try:
             data, addr = sock.recvfrom(BUFFER)
             parsed = parse_message(data.decode())
-            print(f"\n[來自 {addr[0]}] {parsed}")
+            # print(f"\n[來自 {addr[0]}] {parsed}")
         except Exception as e:
             print(f"[錯誤] 接收失敗: {e}")
 
