@@ -1,3 +1,4 @@
+### ui/menu.py
 import curses
 from network import messenger
 from utils import neighbor_discovery, history
@@ -33,14 +34,14 @@ def main_menu(stdscr):
 def group_chat(stdscr):
     curses.echo()
     stdscr.clear()
-    stdscr.addstr(0, 0, "[群組聊天室] 輸入訊息，按 Enter 發送，輸入 /back 返回\n")
+    stdscr.addstr(0, 0, "[群組聊天室] 預設頻道: general，輸入訊息按 Enter 發送，/back 返回\n")
     while True:
         stdscr.addstr(2, 0, "> ")
         msg = stdscr.getstr().decode()
         if msg == "/back":
             break
-        messenger.send_broadcast(msg)
-        history.save_chat("broadcast", msg)
+        messenger.send_broadcast(msg, channel="general")
+        history.save_chat("general", msg)
 
 def private_chat(stdscr):
     curses.echo()
@@ -71,7 +72,7 @@ def private_chat(stdscr):
         name = new_name
 
     stdscr.clear()
-    stdscr.addstr(0, 0, f"[與 {name} 的對話] 輸入訊息，/back 返回\n")
+    stdscr.addstr(0, 0, f"[與 {name} 的私聊] 輸入訊息，/back 返回\n")
     while True:
         stdscr.addstr(2, 0, "> ")
         msg = stdscr.getstr().decode()
@@ -83,7 +84,7 @@ def private_chat(stdscr):
 def show_history(stdscr):
     curses.echo()
     stdscr.clear()
-    stdscr.addstr(0, 0, "[聊天記錄] 輸入對象名稱或 broadcast 查看群聊，/back 返回\n")
+    stdscr.addstr(0, 0, "[聊天記錄] 輸入對象名稱或 general 查看群聊，/back 返回\n")
     stdscr.addstr(2, 0, "對象名稱: ")
     target = stdscr.getstr().decode()
     if target == "/back":
