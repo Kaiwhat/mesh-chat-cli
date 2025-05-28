@@ -1,4 +1,3 @@
-### ui/menu.py
 import curses
 from network import messenger
 from utils import neighbor_discovery, history
