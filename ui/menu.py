@@ -46,7 +46,7 @@ def group_chat(stdscr):
         # 顯示訊息紀錄區塊
         logs = msg.get_log()
         for i, log in enumerate(logs):
-            stdscr.addstr(curses.LINES - 6 + i, 0, log[:max_width])
+            stdscr.addstr(curses.LINES - 11 + i, 0, log[:max_width])
 
         stdscr.addstr(row, 0, "> ")
         msg_text = stdscr.getstr().decode()
@@ -60,7 +60,7 @@ def group_chat(stdscr):
         stdscr.addstr(row + 1, 0, formatted[:max_width])
         history.save_chat("general", msg_text)
         row += 2
-        if row >= curses.LINES - 8:
+        if row >= curses.LINES - 13:
             stdscr.clear()
             stdscr.addstr(0, 0, "[群組聊天室] 預設頻道: general，輸入訊息按 Enter 發送，/back 返回\n")
             row = 2
