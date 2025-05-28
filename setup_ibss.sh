@@ -1,39 +1,41 @@
 #!/bin/bash
 
-# 編輯此處調整網路參數
+# Mesh 網路參數（請視情況調整）
 IFACE=wlan0
 SSID="lsa-mesh"
-FREQ=2412             # channel 1 = 2412 MHz
-IP_ADDR="10.0.0.$(shuf -i 10-250 -n 1)"  # 隨機選擇一個節點位址
+FREQ=2412  # channel 1 (2.412GHz)
 NETMASK=24
+IP_ADDR="10.0.0.$(shuf -i 10-250 -n 1)"  # 隨機選一個節點 IP
 
-echo "設定 $IFACE 為 IBSS 模式"
+echo " 停用系統管理無線網卡..."
+sudo systemctl stop NetworkManager 2>/dev/null
+sudo killall wpa_supplicant 2>/dev/null
 
-# 關閉 NetworkManager 或 dhcpcd 控制
+echo " 重設 $IFACE 為 IBSS 模式..."
 sudo ip link set $IFACE down
-sudo systemctl stop NetworkManager
-sudo killall wpa_supplicant
 sudo iw dev $IFACE set type ibss
 sudo ip link set $IFACE up
 
-echo "加入 IBSS 網路 SSID=$SSID 頻道=2412"
-# 加入 IBSS 網路
-sudo iw dev $IFACE ibss join $SSID $FREQ
+echo " 加入 IBSS 網路 SSID=$SSID 頻道=$FREQ"
+sudo iw dev $IFACE ibss join "$SSID" $FREQ
 
-echo "設定靜態 IP 為 $IP_ADDR/$NETMASK"
-# 設定靜態 IP
+echo " 清除 wlan0 上的 IP（避免干擾）"
 sudo ip addr flush dev $IFACE
-sudo ip addr add $IP_ADDR/$NETMASK dev $IFACE
 
-echo "正在開啟 batman-adv"
-# 開啟 batman-adv
+echo " 啟用 batman-adv..."
 sudo modprobe batman-adv
-sudo ip link set $IFACE down
-sudo iw dev $IFACE set type ibss  # 檢查是否仍為 ibss
-sudo ip link set $IFACE up
 
+# 清除先前加入的介面（若有）
+sudo batctl if del $IFACE 2>/dev/null
+
+echo " 將 $IFACE 加入 bat0"
 sudo batctl if add $IFACE
+
+echo " 啟動 bat0 介面..."
 sudo ip link set up dev bat0
+
+echo " 指定 bat0 IP 為 $IP_ADDR/$NETMASK"
 sudo ip addr add $IP_ADDR/$NETMASK dev bat0
 
-echo "完成，現在已加入 Mesh 網路，節點 IP: $IP_ADDR"
+echo " 設定完成！"
+echo " Mesh IP 位址（bat0）：$IP_ADDR"
