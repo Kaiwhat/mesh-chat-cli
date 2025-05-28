@@ -11,6 +11,8 @@ echo "設定 $IFACE 為 IBSS 模式"
 
 # 關閉 NetworkManager 或 dhcpcd 控制
 sudo ip link set $IFACE down
+sudo systemctl stop NetworkManager
+sudo killall wpa_supplicant
 sudo iw dev $IFACE set type ibss
 sudo ip link set $IFACE up
 
@@ -35,3 +37,4 @@ sudo ip link set up dev bat0
 sudo ip addr add $IP_ADDR/$NETMASK dev bat0
 
 echo "完成，現在已加入 Mesh 網路，節點 IP: $IP_ADDR"
+sudo bash "$SCRIPT_DIR/ping_sweep.sh"

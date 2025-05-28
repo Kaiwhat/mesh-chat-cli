@@ -23,19 +23,19 @@ def main():
 
     while True:
         try:
-            line = input("📝 輸入: ")
+            line = input(" 輸入: ")
             if not line: continue
             if line.strip().lower() == "/exit":
-                print("👋 離開聊天")
+                print(" 離開聊天")
                 break
             parts = line.split(maxsplit=1)
             if len(parts) < 2:
-                print("❗ 請使用格式：<IP> <訊息>")
+                print(" 請使用格式：<IP> <訊息>")
                 continue
             ip, msg = parts
             sock.sendto(msg.encode(), (ip, PORT))
         except KeyboardInterrupt:
-            print("\n👋 離開聊天")
+            print("\n 離開聊天")
             break
 
 if __name__ == "__main__":

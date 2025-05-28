@@ -12,6 +12,7 @@ if [[ "$1" == "--name" && -n "$2" ]]; then
 fi
 
 echo "🔧 執行 setup_ibss.sh..."
+sudo apt install batctl
 sudo bash "$SCRIPT_DIR/setup_ibss.sh"
 
 echo "等待網路介面穩定..."
