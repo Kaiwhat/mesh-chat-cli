@@ -2,6 +2,7 @@
 echo " 還原 wlan0 為正常 WiFi 模式..."
 
 # 關閉 Mesh 網卡並還原
+sudo ip link set bat0 down
 sudo ip link set wlan0 down
 sudo iw dev wlan0 set type managed
 sudo ip link set wlan0 up
