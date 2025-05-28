@@ -2,6 +2,7 @@ import socket
 import threading
 import json
 from utils import config, neighbor_discovery
+from wcwidth import wcswidth
 
 PORT = 5000
 BUFFER = 1024
@@ -15,10 +16,14 @@ def format_message(channel, message):
     }
     return json.dumps(data)
 
-def parse_message(data):
+def parse_message(data, width=80):
     try:
         msg = json.loads(data)
-        return f"[{msg['channel']}] {msg['from']}: {msg['message']}"
+        raw = f"[{msg['channel']}] {msg['from']}: {msg['message']}"
+        padding = width - wcswidth(raw)
+        if padding > 0:
+            return raw + ' ' * padding
+        return raw
     except:
         return data
 

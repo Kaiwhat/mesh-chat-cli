@@ -1,6 +1,8 @@
 import curses
 from network import messenger
 from utils import neighbor_discovery, history
+import config
+from wcwidth import wcswidth
 
 def main_menu(stdscr):
     curses.curs_set(0)
@@ -34,13 +36,25 @@ def group_chat(stdscr):
     curses.echo()
     stdscr.clear()
     stdscr.addstr(0, 0, "[群組聊天室] 預設頻道: general，輸入訊息按 Enter 發送，/back 返回\n")
+    row = 2
+    max_width = curses.COLS - 2
     while True:
-        stdscr.addstr(2, 0, "> ")
+        stdscr.addstr(row, 0, "> ")
         msg = stdscr.getstr().decode()
         if msg == "/back":
             break
         messenger.send_broadcast(msg, channel="general")
+        formatted = f"[general] {config.load_nickname()}: {msg}"
+        padding = max_width - wcswidth(formatted)
+        if padding > 0:
+            formatted += ' ' * padding
+        stdscr.addstr(row + 1, 0, formatted[:max_width])
         history.save_chat("general", msg)
+        row += 2
+        if row >= curses.LINES - 2:
+            stdscr.clear()
+            stdscr.addstr(0, 0, "[群組聊天室] 預設頻道: general，輸入訊息按 Enter 發送，/back 返回\n")
+            row = 2
 
 def private_chat(stdscr):
     curses.echo()
