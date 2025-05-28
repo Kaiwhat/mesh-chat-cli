@@ -6,7 +6,7 @@ def _get_neighbors_from_dc():
     result = {}
     try:
         out = subprocess.check_output(["batctl", "dc"], text=True)
-        print("[除錯] batctl dc 輸出:\n", out)
+        # print("[除錯] batctl dc 輸出:\n", out)
         for line in out.splitlines():
             match = re.search(r"(\d+\.\d+\.\d+\.\d+).*?(\w\w:\w\w:\w\w:\w\w:\w\w:\w\w)", line)
             if match:
@@ -34,7 +34,7 @@ def get_named_neighbors():
     for ip, mac in ip_mac_map.items():
         name = names.get(ip, names.get(mac, "未知節點"))
         result[ip] = name
-    print("[除錯] 鄰居節點：", result)
+    # print("[除錯] 鄰居節點：", result)
     return result
 
 def update_node_name(ip, name):
