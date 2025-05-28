@@ -21,3 +21,7 @@ sleep 3
 
 echo "啟動聊天介面..."
 python3 "$SCRIPT_DIR/main.py"
+
+# 程式結束後自動還原 WiFi
+echo " 聊天結束，執行 restore_wifi.sh..."
+sudo bash "$SCRIPT_DIR/restore_wifi.sh"
