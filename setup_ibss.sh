@@ -37,4 +37,3 @@ sudo ip link set up dev bat0
 sudo ip addr add $IP_ADDR/$NETMASK dev bat0
 
 echo "完成，現在已加入 Mesh 網路，節點 IP: $IP_ADDR"
-sudo bash "$SCRIPT_DIR/ping_sweep.sh"
