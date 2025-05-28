@@ -6,6 +6,8 @@ from wcwidth import wcswidth
 
 PORT = 5000
 BUFFER = 1024
+message_log = []  # 將訊息暫存於此 list
+
 
 def format_message(channel, message):
     nickname = config.load_nickname()
@@ -32,14 +34,16 @@ sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 sock.bind(("", PORT))
 
 def start_listener():
-    # print(f"\n[系統] 已啟動接收器，監聽 UDP 埠 {PORT}\n")
     while True:
         try:
             data, addr = sock.recvfrom(BUFFER)
             parsed = parse_message(data.decode())
-            # print(f"\n[來自 {addr[0]}] {parsed}")
+            message_log.append(parsed)
         except Exception as e:
-            print(f"[錯誤] 接收失敗: {e}")
+            message_log.append(f"[錯誤] 接收失敗: {e}")
+
+def get_log():
+    return message_log[-5:]  # 只回傳最新 5 則訊息供 UI 顯示
 
 def send_broadcast(message, channel="general"):
     formatted = format_message(channel, message)
@@ -48,11 +52,11 @@ def send_broadcast(message, channel="general"):
         try:
             sock.sendto(formatted.encode(), (ip, PORT))
         except Exception as e:
-            print(f" 傳送到 {ip} 失敗：{e}")
+            message_log.append(f" 傳送到 {ip} 失敗：{e}")
 
 def send_private(ip, message):
     formatted = format_message("private", message)
     try:
         sock.sendto(formatted.encode(), (ip, PORT))
     except Exception as e:
-        print(f" 傳送到 {ip} 失敗：{e}")
+        message_log.append(f" 傳送到 {ip} 失敗：{e}")

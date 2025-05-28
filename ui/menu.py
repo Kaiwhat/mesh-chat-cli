@@ -1,9 +1,10 @@
-import curses, subprocess, os
-from network import messenger
-from utils import neighbor_discovery, history, config
+import curses
+from network import messenger, messenger as msg
+from utils import neighbor_discovery, history
 from wcwidth import wcswidth
-
-SCRIPT_PATH = os.path.join(os.path.dirname(__file__), "../ping_sweep.sh")
+import subprocess
+import threading
+import time
 
 def main_menu(stdscr):
     curses.curs_set(0)
@@ -35,18 +36,6 @@ def main_menu(stdscr):
                 break
         stdscr.refresh()
 
-def ping_sweep(stdscr):
-    curses.echo()
-    stdscr.clear()
-    stdscr.addstr(0, 0, "Ping travelsal...")
-    try:
-        output = subprocess.check_output([SCRIPT_PATH, ">/dev/null"], text=True)
-        stdscr.addstr(2, 0, output)
-    except Exception as e:
-        stdscr.addstr(3, 0, f"[錯誤] 執行 ping_sweep.sh 失敗: {e}")
-    stdscr.addstr(5, 0, "按任意鍵返回...")
-    stdscr.getch()
-
 def group_chat(stdscr):
     curses.echo()
     stdscr.clear()
@@ -54,22 +43,51 @@ def group_chat(stdscr):
     row = 2
     max_width = curses.COLS - 2
     while True:
+        # 顯示訊息紀錄區塊
+        logs = msg.get_log()
+        for i, log in enumerate(logs):
+            stdscr.addstr(curses.LINES - 6 + i, 0, log[:max_width])
+
         stdscr.addstr(row, 0, "> ")
-        msg = stdscr.getstr().decode()
-        if msg == "/back":
+        msg_text = stdscr.getstr().decode()
+        if msg_text == "/back":
             break
-        messenger.send_broadcast(msg, channel="general")
-        formatted = f"[general] {config.load_nickname()}: {msg}"
+        messenger.send_broadcast(msg_text, channel="general")
+        formatted = f"[general] {messenger.config.load_nickname()}: {msg_text}"
         padding = max_width - wcswidth(formatted)
         if padding > 0:
             formatted += ' ' * padding
         stdscr.addstr(row + 1, 0, formatted[:max_width])
-        history.save_chat("general", msg)
+        history.save_chat("general", msg_text)
         row += 2
-        if row >= curses.LINES - 2:
+        if row >= curses.LINES - 8:
             stdscr.clear()
             stdscr.addstr(0, 0, "[群組聊天室] 預設頻道: general，輸入訊息按 Enter 發送，/back 返回\n")
             row = 2
+
+def ping_sweep(stdscr):
+    curses.echo()
+    stdscr.clear()
+    stdscr.addstr(0, 0, "🔍 掃描 10.0.0.1~254 範圍中的活躍節點中...\n")
+    stdscr.refresh()
+
+    def do_ping(ip):
+        try:
+            subprocess.run(["ping", "-c", "1", "-W", "1", ip], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            return True
+        except:
+            return False
+
+    live = []
+    for i in range(1, 255):
+        ip = f"10.0.0.{i}"
+        if do_ping(ip):
+            live.append(ip)
+            stdscr.addstr(len(live)+1, 0, f"✔ 發現節點: {ip}\n")
+            stdscr.refresh()
+
+    stdscr.addstr(len(live)+3, 0, f"共發現 {len(live)} 台裝置。按任意鍵返回...")
+    stdscr.getch()
 
 def private_chat(stdscr):
     curses.echo()
