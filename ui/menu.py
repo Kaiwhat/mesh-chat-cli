@@ -38,9 +38,12 @@ def ping_sweep(stdscr):
     stdscr.clear()
     stdscr.addstr(0, 0, "Ping travelsal...")
     try:
-        subprocess.check_output(["./ping_sweep.sh"], text=True)
+        output = subprocess.check_output(["./ping_sweep.sh", "2>/dev/null"], text=True)
+        stdscr.addstr(2, 0, output)
     except Exception as e:
-        print(f"[錯誤] 執行 ping_sweep 失敗: {e}")
+        stdscr.addstr(3, 0, f"[錯誤] 執行 ping_sweep.sh 失敗: {e}")
+    stdscr.addstr(5, 0, "按任意鍵返回...")
+    stdscr.getch()
 
 def group_chat(stdscr):
     curses.echo()
