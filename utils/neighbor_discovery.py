@@ -2,18 +2,17 @@ import subprocess, json, re, os
 
 CONFIG_FILE = os.path.join(os.path.dirname(__file__), "../config/nodes.json")
 
-def _get_ip_mac_from_tg():
+def _get_neighbors_by_ping():
     result = {}
-    try:
-        out = subprocess.check_output(["batctl", "tg"], text=True)
-        print("[除錯] batctl tg 輸出:\n", out)
-        for line in out.splitlines():
-            match = re.search(r"(\d+\.\d+\.\d+\.\d+).*?(\w\w:\w\w:\w\w:\w\w:\w\w:\w\w)", line)
+    for i in range(1, 255):
+        ip = f"10.0.0.{i}"
+        try:
+            out = subprocess.check_output(["ping", "-c", "1", "-W", "1", ip], stderr=subprocess.DEVNULL, text=True)
+            match = re.search(r"icmp_seq=1.*?ttl=\d+.*?time=.*?ms", out)
             if match:
-                ip, mac = match.groups()
-                result[mac.lower()] = ip
-    except Exception as e:
-        print(f"[錯誤] 執行 batctl tg 失敗: {e}")
+                result[ip] = "未知節點"
+        except subprocess.CalledProcessError:
+            continue
     return result
 
 def _load_names():
@@ -28,21 +27,17 @@ def _save_names(names):
         json.dump(names, f)
 
 def get_named_neighbors():
-    tg_map = _get_ip_mac_from_tg()
+    ip_map = _get_neighbors_by_ping()
     names = _load_names()
     result = {}
-    for mac, ip in tg_map.items():
-        name = names.get(mac, "未知節點")
+    for ip in ip_map:
+        name = names.get(ip, "未知節點")
         result[ip] = name
     print("[除錯] 鄰居節點：", result)
     return result
 
 def update_node_name(ip, name):
-    tg_map = _get_ip_mac_from_tg()
-    for mac, ip_addr in tg_map.items():
-        if ip_addr == ip:
-            names = _load_names()
-            names[mac] = name
-            _save_names(names)
-            return True
-    return False
+    names = _load_names()
+    names[ip] = name
+    _save_names(names)
+    return True
