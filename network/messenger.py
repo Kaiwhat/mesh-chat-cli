@@ -43,7 +43,7 @@ def start_listener():
             message_log.append(f"[錯誤] 接收失敗: {e}")
 
 def get_log():
-    return message_log[-5:]  # 只回傳最新 5 則訊息供 UI 顯示
+    return message_log[-10:]  # 只回傳最新 5 則訊息供 UI 顯示
 
 def send_broadcast(message, channel="general"):
     formatted = format_message(channel, message)
