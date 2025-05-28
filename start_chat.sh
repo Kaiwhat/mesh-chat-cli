@@ -17,7 +17,7 @@ sudo pip3 install --break-system-packages wcwidth
 sudo bash "$SCRIPT_DIR/setup_ibss.sh"
 
 echo "等待網路介面穩定..."
-sudo bash "$SCRIPT_DIR/ping_sweep.sh" 2>/dev/null
+sudo bash "$SCRIPT_DIR/ping_sweep.sh" > /dev/null
 
 echo "啟動聊天介面..."
 python3 "$SCRIPT_DIR/main.py"

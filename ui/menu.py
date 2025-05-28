@@ -1,7 +1,9 @@
-import curses, subprocess
+import curses, subprocess, os
 from network import messenger
 from utils import neighbor_discovery, history, config
 from wcwidth import wcswidth
+
+SCRIPT_PATH = os.path.join(os.path.dirname(__file__), "../ping_sweep.sh")
 
 def main_menu(stdscr):
     curses.curs_set(0)
@@ -38,7 +40,7 @@ def ping_sweep(stdscr):
     stdscr.clear()
     stdscr.addstr(0, 0, "Ping travelsal...")
     try:
-        output = subprocess.check_output(["../ping_sweep.sh", "2>/dev/null"], text=True)
+        output = subprocess.check_output([SCRIPT_PATH, ">/dev/null"], text=True)
         stdscr.addstr(2, 0, output)
     except Exception as e:
         stdscr.addstr(3, 0, f"[錯誤] 執行 ping_sweep.sh 失敗: {e}")
