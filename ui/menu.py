@@ -38,7 +38,7 @@ def ping_sweep(stdscr):
     stdscr.clear()
     stdscr.addstr(0, 0, "Ping travelsal...")
     try:
-        output = subprocess.check_output(["./ping_sweep.sh", "2>/dev/null"], text=True)
+        output = subprocess.check_output(["../ping_sweep.sh", "2>/dev/null"], text=True)
         stdscr.addstr(2, 0, output)
     except Exception as e:
         stdscr.addstr(3, 0, f"[錯誤] 執行 ping_sweep.sh 失敗: {e}")
