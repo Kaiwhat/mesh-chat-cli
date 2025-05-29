@@ -116,7 +116,7 @@ def ping_sweep(stdscr):
 
 def private_chat(stdscr):
     curses.echo()
-    stdscr.nodelay(True)
+    stdscr.nodelay(False)
     stdscr.clear()
     stdscr.addstr(0, 0, "[私人對話] 掃描中...\n")
 
@@ -150,6 +150,7 @@ def private_chat(stdscr):
     input_buffer = ""
 
     while True:
+        stdscr.nodelay(True)
         stdscr.addstr(row, 0, "> " + input_buffer)
         stdscr.clrtoeol()
 
