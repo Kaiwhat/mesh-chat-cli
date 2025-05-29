@@ -21,6 +21,7 @@ sudo iw dev $IFACE ibss join "$SSID" $FREQ
 
 echo " 清除 wlan0 上的 IP（避免干擾）"
 sudo ip addr flush dev $IFACE
+sudo rmmod batman-adv
 
 echo " 啟用 batman-adv..."
 sudo modprobe batman-adv
