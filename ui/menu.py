@@ -38,37 +38,59 @@ def main_menu(stdscr):
 
 def group_chat(stdscr):
     curses.echo()
+    stdscr.nodelay(True)  # 非阻塞模式
     stdscr.clear()
     stdscr.addstr(0, 0, "[群組聊天室] 預設頻道: general，輸入訊息按 Enter 發送，/back 返回\n")
     row = 2
     max_width = curses.COLS - 2
+    input_buffer = ""
+
     while True:
-        # 顯示訊息紀錄區塊
+        stdscr.addstr(row, 0, "> " + input_buffer)
+        stdscr.clrtoeol()
+
+        # 顯示底部訊息紀錄區塊
         logs = msg.get_log()
         for i, log in enumerate(logs):
             stdscr.addstr(curses.LINES - 11 + i, 0, log[:max_width])
+            stdscr.clrtoeol()
 
-        stdscr.addstr(row, 0, "> ")
-        msg_text = stdscr.getstr().decode()
-        if msg_text == "/back":
-            break
-        messenger.send_broadcast(msg_text, channel="general")
-        formatted = f"[general] {messenger.config.load_nickname()}: {msg_text}"
-        padding = max_width - wcswidth(formatted)
-        if padding > 0:
-            formatted += ' ' * padding
-        stdscr.addstr(row + 1, 0, formatted[:max_width])
-        history.save_chat("general", msg_text)
-        row += 2
-        if row >= curses.LINES - 13:
-            stdscr.clear()
-            stdscr.addstr(0, 0, "[群組聊天室] 預設頻道: general，輸入訊息按 Enter 發送，/back 返回\n")
-            row = 2
+        stdscr.refresh()
+        time.sleep(1)
+
+        try:
+            key = stdscr.getch()
+            if key == -1:
+                continue
+            elif key in (curses.KEY_BACKSPACE, 127):
+                input_buffer = input_buffer[:-1]
+            elif key in (curses.KEY_ENTER, 10, 13):
+                msg_text = input_buffer.strip()
+                if msg_text == "/back":
+                    break
+                if msg_text:
+                    messenger.send_broadcast(msg_text, channel="general")
+                    formatted = f"[general] {messenger.config.load_nickname()}: {msg_text}"
+                    padding = max_width - wcswidth(formatted)
+                    if padding > 0:
+                        formatted += ' ' * padding
+                    stdscr.addstr(row + 1, 0, formatted[:max_width])
+                    history.save_chat("general", msg_text)
+                    row += 2
+                    if row >= curses.LINES - 13:
+                        stdscr.clear()
+                        stdscr.addstr(0, 0, "[群組聊天室] 預設頻道: general，輸入訊息按 Enter 發送，/back 返回\n")
+                        row = 2
+                input_buffer = ""
+            elif 32 <= key <= 126:
+                input_buffer += chr(key)
+        except:
+            continue
 
 def ping_sweep(stdscr):
     curses.echo()
     stdscr.clear()
-    stdscr.addstr(0, 0, "🔍 掃描 10.0.0.1~254 範圍中的活躍節點中...\n")
+    stdscr.addstr(0, 0, " 掃描 10.0.0.1~254 範圍中的活躍節點中...\n")
     stdscr.refresh()
 
     def do_ping(ip):
@@ -83,7 +105,7 @@ def ping_sweep(stdscr):
         ip = f"10.0.0.{i}"
         if do_ping(ip):
             live.append(ip)
-            stdscr.addstr(len(live)+1, 0, f"✔ 發現節點: {ip}\n")
+            stdscr.addstr(len(live)+1, 0, f" 發現節點: {ip}\n")
             stdscr.refresh()
 
     stdscr.addstr(len(live)+3, 0, f"共發現 {len(live)} 台裝置。按任意鍵返回...")
@@ -91,6 +113,7 @@ def ping_sweep(stdscr):
 
 def private_chat(stdscr):
     curses.echo()
+    stdscr.nodelay(True)
     stdscr.clear()
     stdscr.addstr(0, 0, "[私人對話] 掃描中...\n")
 
@@ -119,13 +142,50 @@ def private_chat(stdscr):
 
     stdscr.clear()
     stdscr.addstr(0, 0, f"[與 {name} 的私聊] 輸入訊息，/back 返回\n")
+    row = 2
+    max_width = curses.COLS - 2
+    input_buffer = ""
+
     while True:
-        stdscr.addstr(2, 0, "> ")
-        msg = stdscr.getstr().decode()
-        if msg == "/back":
-            break
-        messenger.send_private(ip, msg)
-        history.save_chat(name, msg)
+        stdscr.addstr(row, 0, "> " + input_buffer)
+        stdscr.clrtoeol()
+
+        logs = [line for line in msg.get_log() if name in line or ip in line or "private" in line]
+        for i, log in enumerate(logs[-10:]):
+            stdscr.addstr(curses.LINES - 11 + i, 0, log[:max_width])
+            stdscr.clrtoeol()
+
+        stdscr.refresh()
+        time.sleep(0.5)
+
+        try:
+            key = stdscr.getch()
+            if key == -1:
+                continue
+            elif key in (curses.KEY_BACKSPACE, 127):
+                input_buffer = input_buffer[:-1]
+            elif key in (curses.KEY_ENTER, 10, 13):
+                msg_text = input_buffer.strip()
+                if msg_text == "/back":
+                    break
+                if msg_text:
+                    messenger.send_private(ip, msg_text)
+                    formatted = f"[private] {messenger.config.load_nickname()}: {msg_text}"
+                    padding = max_width - wcswidth(formatted)
+                    if padding > 0:
+                        formatted += ' ' * padding
+                    stdscr.addstr(row + 1, 0, formatted[:max_width])
+                    history.save_chat(name, msg_text)
+                    row += 2
+                    if row >= curses.LINES - 13:
+                        stdscr.clear()
+                        stdscr.addstr(0, 0, f"[與 {name} 的私聊] 輸入訊息，/back 返回\n")
+                        row = 2
+                input_buffer = ""
+            elif 32 <= key <= 126:
+                input_buffer += chr(key)
+        except:
+            continue
 
 def show_history(stdscr):
     curses.echo()
