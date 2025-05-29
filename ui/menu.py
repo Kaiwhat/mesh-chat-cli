@@ -128,7 +128,8 @@ def private_chat(stdscr):
     for i, (ip, name) in enumerate(neighbors.items()):
         stdscr.addstr(i+2, 2, f"[{i+1}] {name} ({ip})")
 
-    stdscr.addstr(len(neighbors)+3, 0, "請輸入對象編號：")
+    y = min(len(neighbors)+3, curses.LINES - 2)
+    stdscr.addstr(y, 0, "請輸入對象編號:")
     idx = int(stdscr.getstr().decode()) - 1
     if idx < 0 or idx >= len(neighbors): stdscr.nodelay(False); return
 
