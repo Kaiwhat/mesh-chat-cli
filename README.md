@@ -79,11 +79,11 @@ sudo ./setup_ibss.sh
 ╔══════════════════════════════╗
 ║       Mesh CLI Chat          ║
 ╠══════════════════════════════╣
-║ ▶ 群組聊天室                  ║
-║   私人對話                    ║
-║   查看聊天記錄                 ║
-║   掃描                        ║
-║   離開                        ║
+║ ▶ 群組聊天室                  
+║   私人對話                    
+║   查看聊天記錄                 
+║   掃描                        
+║   離開                        
 ╚══════════════════════════════╝
 ↑↓：選擇功能   Enter：執行
 ```
@@ -123,7 +123,7 @@ mesh-chat-cli/
 
 ---
 
-## 🧪 測試與除錯
+## 測試與除錯
 
 ### 查看 bat0 IP
 
@@ -148,6 +148,6 @@ sudo batctl dc
 
 ## 注意事項
 
-* 若使用內建 Wi-Fi 模組無法成功建立 Mesh，建議改用支援 IBSS 的 USB 網卡（如 TP-Link TL-WN722N v1、Alfa AWUS036NHA）
+* 有些 Rasberry Pi 3 內建的 Wi-Fi 模組無法成功建立 Mesh，需要改用支援 IBSS 的 USB 網卡（如 TP-Link TL-WN722N v1、Alfa AWUS036NHA）
 * 每次啟動聊天前必須先執行 `setup_ibss.sh`
 * 請勿同時以多個終端開啟 `main.py`，避免 port 衝突
