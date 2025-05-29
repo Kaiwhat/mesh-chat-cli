@@ -122,7 +122,7 @@ def private_chat(stdscr):
 
     neighbors = neighbor_discovery.get_named_neighbors()
     if not neighbors:
-        stdscr.addstr(1, 0, "未發現任何鄰居節點，請確認網路狀態。"); stdscr.getch(); return
+        stdscr.addstr(1, 0, "未發現任何鄰居節點，請確認網路狀態。"); stdscr.getch(); stdscr.nodelay(False); return
 
     stdscr.addstr(1, 0, "選擇聊天對象：\n")
     for i, (ip, name) in enumerate(neighbors.items()):
@@ -130,7 +130,7 @@ def private_chat(stdscr):
 
     stdscr.addstr(len(neighbors)+3, 0, "請輸入對象編號：")
     idx = int(stdscr.getstr().decode()) - 1
-    if idx < 0 or idx >= len(neighbors): return
+    if idx < 0 or idx >= len(neighbors): stdscr.nodelay(False); return
 
     ip = list(neighbors.keys())[idx]
     name = list(neighbors.values())[idx]
@@ -144,13 +144,13 @@ def private_chat(stdscr):
         name = new_name
 
     stdscr.clear()
+    stdscr.nodelay(True)
     stdscr.addstr(0, 0, f"[與 {name} 的私聊] 輸入訊息，/back 返回\n")
     row = 2
     max_width = curses.COLS - 2
     input_buffer = ""
 
     while True:
-        stdscr.nodelay(True)
         stdscr.addstr(row, 0, "> " + input_buffer)
         stdscr.clrtoeol()
 
