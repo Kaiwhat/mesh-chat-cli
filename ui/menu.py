@@ -8,6 +8,7 @@ import time
 
 def main_menu(stdscr):
     curses.curs_set(0)
+    stdscr.nodelay(False)
     options = ["群組聊天室", "私人對話", "查看聊天記錄", "掃描", "離開"]
     current_row = 0
 
@@ -89,6 +90,7 @@ def group_chat(stdscr):
 
 def ping_sweep(stdscr):
     curses.echo()
+    stdscr.nodelay(False)
     stdscr.clear()
     stdscr.addstr(0, 0, " 掃描 10.0.0.1~254 範圍中的活躍節點中...\n")
     stdscr.refresh()
@@ -189,6 +191,7 @@ def private_chat(stdscr):
 
 def show_history(stdscr):
     curses.echo()
+    stdscr.nodelay(False)
     stdscr.clear()
     stdscr.addstr(0, 0, "[聊天記錄] 輸入對象名稱或 general 查看群聊，/back 返回\n")
     stdscr.addstr(2, 0, "對象名稱: ")
