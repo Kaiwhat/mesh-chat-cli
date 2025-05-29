@@ -57,7 +57,7 @@ def group_chat(stdscr):
             stdscr.clrtoeol()
 
         stdscr.refresh()
-        time.sleep(1)
+        time.sleep(0.25)
 
         try:
             key = stdscr.getch()
@@ -68,6 +68,7 @@ def group_chat(stdscr):
             elif key in (curses.KEY_ENTER, 10, 13):
                 msg_text = input_buffer.strip()
                 if msg_text == "/back":
+                    stdscr.nodelay(False)
                     break
                 if msg_text:
                     messenger.send_broadcast(msg_text, channel="general")
@@ -169,6 +170,7 @@ def private_chat(stdscr):
             elif key in (curses.KEY_ENTER, 10, 13):
                 msg_text = input_buffer.strip()
                 if msg_text == "/back":
+                    stdscr.nodelay(False)
                     break
                 if msg_text:
                     messenger.send_private(ip, msg_text)
