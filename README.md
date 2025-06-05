@@ -102,15 +102,16 @@ sudo ./setup_ibss.sh
 
 ```
 mesh-chat-cli/
-├── main.py                       # 主程式：啟動 curses UI 與接收器
-├── ping_sweep.sh                 # 依序 ping 10.0.0.0 到 10.0.0.255
-├── restore_wifi.sh               # 關閉 Mesh 網卡並還原
-├── setup_ibss.sh                 # 設定 IBSS + batman-adv script
-├── start_chat.sh                 # 一鍵啟動 script（可帶 --name）
+├── main.py                             # 主程式：啟動 curses UI 與接收器
+├── ping_sweep.sh                       # 依序 ping 10.0.0.0 到 10.0.0.255
+├── restore_wifi.sh                     # 關閉 Mesh 網卡並還原
+├── setup_ibss.sh                       # 設定 IBSS + batman-adv script
+├── start_chat.sh                       # 一鍵啟動 script（可帶 --name）
 ├── ui/
-│   └── menu.py                   # curses UI 主選單 + 群組訊息 / 私人訊息介面
+│   └── menu.py                         # curses UI 主選單 + 群組訊息 / 私人訊息介面
 ├── network/
-│   └── messenger.py              # 廣播 / 單播封包傳送與接收模組
+│   └── messenger.py                    # 廣播 / 單播封包傳送與接收模組
+|   └── messenger_forward_meshtastic.py # 有連接至 meshtastic 需求時使用
 ├── utils/
 │   ├── config.py                 # 暱稱載入與儲存（讀寫 node_config.json）
 │   ├── history.py                # 讀取與寫入訊息紀錄
