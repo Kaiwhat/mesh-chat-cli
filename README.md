@@ -6,7 +6,7 @@
 
 ## 系統需求
 
-- Raspberry Pi
+- Raspberry Pi 3B
 - Raspberry Pi OS
 - Python 3.7+
 - Dependency：
@@ -55,7 +55,14 @@ sudo ./setup_ibss.sh
 
 ---
 
-## 功能特色
+## Features
+- [x] Group chat over batman-adv mesh
+- [x] Real-time private messaging
+- [x] CLI-based UI with curses
+- [x] Node discovery via batctl
+- [ ] Feature: Channel switching
+- [ ] Feature: Message encryption
+- [ ] Feature: Dynamic allocate fixed ibss ip address
 
 ### 基本功能
 
